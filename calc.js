@@ -11,21 +11,21 @@ function multiply(num1, num2) {
 }
 
 function divide(num1, num2) {
-    return num2 !== 0 ? num1 / num2 : 'Cannot divide by zero';
+    return num2 !== 0 ? num1 / num2 : alert('Cannot divide by zero');
 }
 
 
 
-function operate(beginningNumber, calculationOperator, secondNumber) {
-    switch (calculationOperator) {
+function operate(a, c, b) {
+    switch (c) {
         case '+':
-            return addition(beginningNumber, secondNumber);
+            return addition(a, b);
         case '-':
-            return subtraction(beginningNumber, secondNumber);
+            return subtraction(a, b);
         case '*':
-            return multiply(beginningNumber, secondNumber);
+            return multiply(a, b);
         case '/':
-            return divide(beginningNumber, secondNumber);
+            return divide(a, b);
         default:
             return 'Invalid operator';
     }
@@ -43,13 +43,15 @@ const calcDisplay = document.querySelector('#display-value p')
 
 numberButtons.forEach(function (button) {
     button.addEventListener('click', function () {
-        if (calcDisplay.textContent === '0' || newNumber) {
+        // If the number is 0 or the user has clicked an operator button, set the display field to be whatever the user enters next
+        if (calcDisplay.textContent === '0' || newNumber == true) {
             calcDisplay.textContent = this.textContent;
             newNumber = false;
+            // If the number is not zero and the user hasn't clicked an operator button, append the number they clicked to the display field
         } else {
             calcDisplay.textContent += this.textContent;
         }
-        if (calculationOperator === 'waitingForOperatorSymbol' || !calculationOperator) {
+        if (calculationOperator === 'waitingForOperatorSymbol') {
             beginningNumber = parseFloat(calcDisplay.textContent);
         } else {
             secondNumber = parseFloat(calcDisplay.textContent);
@@ -63,9 +65,32 @@ operatorButtons.forEach(function (button) {
             calcDisplay.textContent = 0;
             calculationOperator = 'waitingForOperatorSymbol';
         } else {
-            calcDisplay.textContent += this.textContent;
-            calculationOperator = this.textContent;
+            calcDisplay.textContent += ` ${this.textContent}`;
+            calculationOperator = `${this.textContent}`;
             newNumber = true;
         }
     })
 })
+
+
+const equalButton = document.querySelector('#equals-button')
+
+equalButton.addEventListener('click', function () {
+    if (calculationOperator !== 'waitingForOperatorSymbol') {
+        let result = operate(beginningNumber, calculationOperator, secondNumber);
+        calcDisplay.textContent = result;
+        beginningNumber = result;
+    } else {
+        console.log('Operation not set or incomplete input.');
+    }
+})
+
+const clearButton = document.querySelector('#clear-button')
+
+clearButton.addEventListener('click', function () {
+    beginningNumber = 0;
+    calculationOperator = 'waitingForOperatorSymbol';
+    secondNumber = 0;
+    calcDisplay.textContent = 0;
+})
+
